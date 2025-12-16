@@ -9,13 +9,13 @@ namespace NycTaxiSearch.Services
     {
         private readonly ITaxiTripRepository _repository;
         private readonly ICacheService<TaxiTrip> _cacheService;
-        private readonly ILogger _logger;
+        private readonly ILogger<CsvImportService> _logger;
         private const int BatchSize = 1000;
 
         public CsvImportService(
             ITaxiTripRepository repository,
             ICacheService<TaxiTrip> cacheService,
-            ILogger logger)
+            ILogger<CsvImportService> logger)
         {
             _repository = repository;
             _cacheService = cacheService;

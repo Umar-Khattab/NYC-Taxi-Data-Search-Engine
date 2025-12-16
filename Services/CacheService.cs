@@ -7,11 +7,11 @@ namespace NycTaxiSearch.Services
     public class CacheService<T> : ICacheService<T> where T : class
     {
         private readonly IMemoryCache _cache;
-        private readonly ILogger _logger;
+        private readonly ILogger<CacheService<T>> _logger;
         // Change the type of _cacheKeys from HashSet<T> to HashSet<string>
         private static readonly HashSet<string> _cacheKeys = new();
 
-        public CacheService(IMemoryCache cache, ILogger logger)
+        public CacheService(IMemoryCache cache, ILogger<CacheService<T>> logger)
         {
             _cache = cache;
             _logger = logger;
