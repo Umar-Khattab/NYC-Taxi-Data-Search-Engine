@@ -1,6 +1,12 @@
-﻿namespace NYC_Taxi_Data_Search_Engine.Data.Repositories
+﻿using NycTaxiSearch.Models;
+using NycTaxiSearch.Models.ViewModels;
+using System.Collections.Generic;
+
+namespace NycTaxiSearch.Data.Repositories
 {
-    public interface ITaxiTripRepository
+    public interface ITaxiTripRepository : IRepository<TaxiTrip>
     {
+        Task<(List<TaxiTrip> trips, int totalCount)> SearchAsync(SearchViewModel criteria);
+        Task BulkInsertAsync(IEnumerable<TaxiTrip> trips);
     }
 }
