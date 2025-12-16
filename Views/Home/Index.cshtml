@@ -1,8 +1,120 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-5">
+    <h1 class="display-3 fw-bold mb-3">
+        <i class="bi bi-taxi-front text-primary"></i> NYC Taxi Trip Search Engine
+    </h1>
+    <p class="lead text-muted">Upload, search, and analyze NYC taxi trip data with lightning-fast performance</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-lg">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-cloud-upload text-primary" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="card-title mb-3">Upload CSV Data</h3>
+                <p class="card-text text-muted mb-4">
+                    Import NYC taxi trip data from CSV files. Our streaming parser handles files of any size efficiently.
+                </p>
+                <a asp-controller="TaxiData" asp-action="Upload" class="btn btn-primary btn-lg">
+                    <i class="bi bi-upload me-2"></i>Upload Data
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-lg">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-search text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="card-title mb-3">Search Trips</h3>
+                <p class="card-text text-muted mb-4">
+                    Search and filter taxi trips by date, location, fare, passengers, and more with instant results.
+                </p>
+                <a asp-controller="TaxiData" asp-action="Search" class="btn btn-success btn-lg">
+                    <i class="bi bi-search me-2"></i>Search Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-5">
+    <h2 class="text-center mb-5 fw-bold">Powerful Features</h2>
+    <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="feature-box">
+                <i class="bi bi-lightning-charge-fill text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 mb-2">Lightning Fast</h5>
+                <p class="text-muted small mb-0">In-memory caching delivers instant search results</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="feature-box">
+                <i class="bi bi-funnel-fill text-info" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 mb-2">Advanced Filters</h5>
+                <p class="text-muted small mb-0">Filter by date, location, fare, distance, and more</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="feature-box">
+                <i class="bi bi-graph-up text-success" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 mb-2">Scalable</h5>
+                <p class="text-muted small mb-0">Handle millions of records with ease</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="feature-box">
+                <i class="bi bi-database-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 mb-2">Optimized</h5>
+                <p class="text-muted small mb-0">Strategic indexes for maximum performance</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-lg">
+    <div class="card-body p-5">
+        <h3 class="mb-4"><i class="bi bi-info-circle text-info"></i> How It Works</h3>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                    <div class="badge bg-primary rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <strong>1</strong>
+                    </div>
+                    <div>
+                        <h5>Upload CSV File</h5>
+                        <p class="text-muted small mb-0">Select and upload your NYC taxi trip CSV file through our secure upload interface.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                    <div class="badge bg-success rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <strong>2</strong>
+                    </div>
+                    <div>
+                        <h5>Automatic Import</h5>
+                        <p class="text-muted small mb-0">Data is parsed, validated, and imported into SQL Server with batch processing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                    <div class="badge bg-info rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <strong>3</strong>
+                    </div>
+                    <div>
+                        <h5>Search & Analyze</h5>
+                        <p class="text-muted small mb-0">Use powerful filters to search trips and get instant, cached results.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,4 +1,375 @@
-﻿@page
-@model NYC_Taxi_Data_Search_Engine.Views.TaxiData.ResultsModel
+﻿@model NycTaxiSearch.Models.ViewModels.SearchResultViewModel
 @{
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="card border-0 shadow-lg mb-4">
+    <div class="card-header bg-info text-white">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h3 class="mb-0">
+                <i class="bi bi-list-ul me-2"></i>Search Results
+            </h3>
+            @if (Model.FromCache)
+            {
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-lightning-charge-fill me-1"></i>Loaded from Cache
+                </span>
+            }
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <!-- Summary Section -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-primary text-white border-0 h-100">
+                    <div class="card-body text-center">
+                        <h2 class="mb-0">@Model.TotalRecords.ToString("N0")</h2>
+                        <small>Total Records Found</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-success text-white border-0 h-100">
+                    <div class="card-body text-center">
+                        <h2 class="mb-0">@Model.Page / @Model.TotalPages</h2>
+                        <small>Current Page</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-info text-white border-0 h-100">
+                    <div class="card-body text-center">
+                        <h2 class="mb-0">@Model.PageSize</h2>
+                        <small>Results Per Page</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <p class="mb-0 text-muted">
+                    Showing @((Model.Page - 1) * Model.PageSize + 1) -
+                    @Math.Min(Model.Page * Model.PageSize, Model.TotalRecords)
+                    of @Model.TotalRecords.ToString("N0") trips
+                </p>
+            </div>
+            <div class="btn-group">
+                <a asp-action="Search" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-1"></i>New Search
+                </a>
+                <button type="button" class="btn btn-outline-success" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i>Print
+                </button>
+            </div>
+        </div>
+
+        @if (!Model.Trips.Any())
+        {
+            <div class="alert alert-warning border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-1">No Results Found</h5>
+                        <p class="mb-0">No trips match your search criteria. Try adjusting your filters.</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-lg-block">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-calendar3 me-1"></i>Pickup</th>
+                            <th><i class="bi bi-calendar-check me-1"></i>Dropoff</th>
+                            <th><i class="bi bi-clock me-1"></i>Duration</th>
+                            <th><i class="bi bi-people me-1"></i>Pass.</th>
+                            <th><i class="bi bi-speedometer2 me-1"></i>Distance</th>
+                            <th><i class="bi bi-geo-alt me-1"></i>Pickup Loc</th>
+                            <th><i class="bi bi-geo me-1"></i>Dropoff Loc</th>
+                            <th><i class="bi bi-currency-dollar me-1"></i>Fare</th>
+                            <th><i class="bi bi-cash me-1"></i>Tip</th>
+                            <th><i class="bi bi-wallet2 me-1"></i>Total</th>
+                            <th><i class="bi bi-credit-card me-1"></i>Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var trip in Model.Trips)
+                        {
+                            <tr>
+                                <td>
+                                    <small class="text-muted d-block">@trip.PickupDateTime.ToString("MM/dd/yyyy")</small>
+                                    <strong>@trip.PickupDateTime.ToString("HH:mm")</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted d-block">@trip.DropoffDateTime.ToString("MM/dd/yyyy")</small>
+                                    <strong>@trip.DropoffDateTime.ToString("HH:mm")</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @trip.TripDuration.ToString(@"hh\:mm")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info">@trip.PassengerCount</span>
+                                </td>
+                                <td>@trip.TripDistance.ToString("F2") mi</td>
+                                <td>
+                                    <small>@(string.IsNullOrEmpty(trip.PickupLocation) ? "N/A" : trip.PickupLocation)</small>
+                                </td>
+                                <td>
+                                    <small>@(string.IsNullOrEmpty(trip.DropoffLocation) ? "N/A" : trip.DropoffLocation)</small>
+                                </td>
+                                <td class="text-end">
+                                    <span class="text-primary fw-bold">$@trip.FareAmount.ToString("F2")</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="text-success">$@trip.TipAmount.ToString("F2")</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-dark">$@trip.TotalAmount.ToString("F2")</strong>
+                                </td>
+                                <td>
+                                    <span class="badge @(trip.PaymentType == "Credit Card" ? "bg-primary" : trip.PaymentType == "Cash" ? "bg-success" : "bg-secondary")">
+                                        @(string.IsNullOrEmpty(trip.PaymentType) ? "N/A" : trip.PaymentType)
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="d-lg-none">
+                @foreach (var trip in Model.Trips)
+                {
+                    <div class="card mb-3 border shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-calendar3 text-primary me-1"></i>
+                                    @trip.PickupDateTime.ToString("MM/dd/yyyy HH:mm")
+                                </h6>
+                                <span class="badge @(trip.PaymentType == "Credit Card" ? "bg-primary" : trip.PaymentType == "Cash" ? "bg-success" : "bg-secondary")">
+                                    @(string.IsNullOrEmpty(trip.PaymentType) ? "N/A" : trip.PaymentType)
+                                </span>
+                            </div>
+                            <div class="row g-2 small">
+                                <div class="col-6">
+                                    <strong>Duration:</strong> @trip.TripDuration.ToString(@"hh\:mm")
+                                </div>
+                                <div class="col-6">
+                                    <strong>Passengers:</strong> @trip.PassengerCount
+                                </div>
+                                <div class="col-6">
+                                    <strong>Distance:</strong> @trip.TripDistance.ToString("F2") mi
+                                </div>
+                                <div class="col-6">
+                                    <strong>Fare:</strong> <span class="text-primary">$@trip.FareAmount.ToString("F2")</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Tip:</strong> <span class="text-success">$@trip.TipAmount.ToString("F2")</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Total:</strong> <span class="fw-bold">$@trip.TotalAmount.ToString("F2")</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(trip.PickupLocation))
+                                {
+                                    <div class="col-12">
+                                        <strong>From:</strong> @trip.PickupLocation
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(trip.DropoffLocation))
+                                {
+                                    <div class="col-12">
+                                        <strong>To:</strong> @trip.DropoffLocation
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Search results pagination" class="mt-4">
+                    <ul class="pagination justify-content-center flex-wrap">
+                        <!-- First Page -->
+                        @if (Model.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(1)">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(Model.Page - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Page Numbers -->
+                        @{
+                            var startPage = Math.Max(1, Model.Page - 2);
+                            var endPage = Math.Min(Model.TotalPages, Model.Page + 2);
+
+                            if (startPage > 1)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+
+                            for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == Model.Page ? "active" : "")">
+                                    <a class="page-link" href="@GetPageUrl(i)">@i</a>
+                                </li>
+                            }
+
+                            if (endPage < Model.TotalPages)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+                        }
+
+                        <!-- Last Page -->
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(Model.Page + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(Model.TotalPages)">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+
+                <!-- Page Jump -->
+                <div class="text-center mt-3">
+                    <form method="get" asp-action="Results" class="d-inline-flex align-items-center gap-2">
+                        <label class="mb-0 small">Jump to page:</label>
+                        <input type="number" name="page" min="1" max="@Model.TotalPages"
+                               class="form-control form-control-sm" style="width: 80px;"
+                               placeholder="Page" />
+                        @Html.Hidden("fromDate", Model.SearchCriteria.FromDate)
+                        @Html.Hidden("toDate", Model.SearchCriteria.ToDate)
+                        @Html.Hidden("minPassengerCount", Model.SearchCriteria.MinPassengerCount)
+                        @Html.Hidden("maxPassengerCount", Model.SearchCriteria.MaxPassengerCount)
+                        @Html.Hidden("minTripDistance", Model.SearchCriteria.MinTripDistance)
+                        @Html.Hidden("maxTripDistance", Model.SearchCriteria.MaxTripDistance)
+                        @Html.Hidden("minFareAmount", Model.SearchCriteria.MinFareAmount)
+                        @Html.Hidden("maxFareAmount", Model.SearchCriteria.MaxFareAmount)
+                        @Html.Hidden("paymentType", Model.SearchCriteria.PaymentType)
+                        @Html.Hidden("pickupLocation", Model.SearchCriteria.PickupLocation)
+                        @Html.Hidden("dropoffLocation", Model.SearchCriteria.DropoffLocation)
+                        @Html.Hidden("pageSize", Model.PageSize)
+                        <button type="submit" class="btn btn-sm btn-primary">Go</button>
+                    </form>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Statistics Card -->
+@if (Model.Trips.Any())
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3"><i class="bi bi-graph-up text-success me-2"></i>Quick Statistics</h5>
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="mb-0 text-primary">$@Model.Trips.Average(t => t.FareAmount).ToString("F2")</h4>
+                        <small class="text-muted">Avg Fare</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="mb-0 text-success">@Model.Trips.Average(t => t.TripDistance).ToString("F2") mi</h4>
+                        <small class="text-muted">Avg Distance</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="mb-0 text-warning">$@Model.Trips.Average(t => t.TipAmount).ToString("F2")</h4>
+                        <small class="text-muted">Avg Tip</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="mb-0 text-info">@Model.Trips.Average(t => t.PassengerCount).ToString("F1")</h4>
+                        <small class="text-muted">Avg Passengers</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+    string GetPageUrl(int page)
+    {
+        return Url.Action("Results", new
+        {
+            page = page,
+            fromDate = Model.SearchCriteria.FromDate,
+            toDate = Model.SearchCriteria.ToDate,
+            minPassengerCount = Model.SearchCriteria.MinPassengerCount,
+            maxPassengerCount = Model.SearchCriteria.MaxPassengerCount,
+            minTripDistance = Model.SearchCriteria.MinTripDistance,
+            maxTripDistance = Model.SearchCriteria.MaxTripDistance,
+            minFareAmount = Model.SearchCriteria.MinFareAmount,
+            maxFareAmount = Model.SearchCriteria.MaxFareAmount,
+            paymentType = Model.SearchCriteria.PaymentType,
+            pickupLocation = Model.SearchCriteria.PickupLocation,
+            dropoffLocation = Model.SearchCriteria.DropoffLocation,
+            pageSize = Model.PageSize
+        }) ?? "#";
+    }
+}
+
+@section Scripts {
+    <script>
+        // Highlight cached results
+        @if (Model.FromCache)
+        {
+                <text>
+                setTimeout(() => {
+                    const badge = document.querySelector('.badge.bg-warning');
+                    if (badge) {
+                        badge.classList.add('animate__animated', 'animate__pulse');
+                    }
+                }, 500);
+                </text>
+        }
+
+        // Print styles
+        window.addEventListener('beforeprint', () => {
+            document.querySelectorAll('.btn, .pagination').forEach(el => {
+                el.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('afterprint', () => {
+            document.querySelectorAll('.btn, .pagination').forEach(el => {
+                el.style.display = '';
+            });
+        });
+    </script>
 }
