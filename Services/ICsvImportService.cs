@@ -1,6 +1,10 @@
-﻿namespace NYC_Taxi_Data_Search_Engine.Services
+﻿using NycTaxiSearch.Models;
+
+namespace NycTaxiSearch.Services
 {
     public interface ICsvImportService
     {
+        Task<(bool, int, string)> ImportCsvAsync(
+            Stream fileStream, string fileName);
     }
 }
