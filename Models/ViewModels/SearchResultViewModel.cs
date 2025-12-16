@@ -1,4 +1,4 @@
-﻿using NYC_Taxi_Data_Search_Engine.Models.ViewModels;
+﻿using NYC_Taxi_Data_Search_Engine;
 using System.Collections.Generic;
 
 namespace NycTaxiSearch.Models.ViewModels

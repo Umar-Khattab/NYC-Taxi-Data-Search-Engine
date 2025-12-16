@@ -17,7 +17,7 @@ namespace NycTaxiSearch.Services
             _logger = logger;
         }
 
-        public Task GetAsync(string key)
+        public Task<T> GetAsync(string key)
         {
             try
             {
